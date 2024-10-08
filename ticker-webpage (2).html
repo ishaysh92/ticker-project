@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>כותרות מתגלגלות - מיושר לימין</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #ticker {
+            width: 80%;
+            height: 60px;
+            overflow: hidden;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            position: relative;
+        }
+        #ticker-content {
+            position: absolute;
+            width: 100%;
+            transition: transform 0.5s linear;
+        }
+        .ticker-item {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* שינוי ליישור לימין */
+            padding-right: 10px; /* מרווח מימין */
+        }
+        .ticker-item a {
+            color: white;
+            text-decoration: none;
+            text-align: right; /* יישור טקסט לימין */
+            width: 100%; /* מאפשר לטקסט להתפרס על פני כל הרוחב */
+        }
+        .ticker-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="ticker">
+        <div id="ticker-content"></div>
+    </div>
+
+    <script>
+        // נתונים מדומים לדוגמה
+        const mockData = [
+            { title: "כותרת ראשונה לדוגמה", link: "#" },
+            { title: "כותרת שנייה לדוגמה", link: "#" },
+            { title: "כותרת שלישית לדוגמה", link: "#" },
+            { title: "כותרת רביעית לדוגמה", link: "#" },
+            { title: "כותרת חמישית לדוגמה", link: "#" }
+        ];
+
+        function fetchTitles() {
+            return Promise.resolve(mockData);
+        }
+
+        function updateTicker(items) {
+            const tickerContent = document.getElementById('ticker-content');
+            const itemHeight = 60;
+            
+            // יצירת תוכן הטיקר עם כפילות
+            tickerContent.innerHTML = items.map(item => 
+                `<div class="ticker-item"><a href="${item.link}" target="_blank">${item.title}</a></div>`
+            ).join('');
+
+            // שכפול התוכן פעם נוספת
+            tickerContent.innerHTML += tickerContent.innerHTML;
+
+            let currentIndex = 0;
+            const totalItems = items.length;
+
+            function moveNext() {
+                currentIndex++;
+                tickerContent.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
+                
+                if (currentIndex >= totalItems) {
+                    setTimeout(() => {
+                        tickerContent.style.transition = 'none';
+                        tickerContent.style.transform = 'translateY(0)';
+                        currentIndex = 0;
+                        setTimeout(() => {
+                            tickerContent.style.transition = 'transform 0.5s linear';
+                        }, 50);
+                    }, 500); // המתנה לסיום האנימציה
+                }
+
+                setTimeout(moveNext, 10000); // עיכוב של 10 שניות
+            }
+
+            setTimeout(moveNext, 10000); // התחל את התנועה לאחר 10 שניות
+        }
+
+        // טען ועדכן את הכותרות בעת טעינת הדף
+        fetchTitles().then(updateTicker);
+
+        // עדכן את הכותרות כל 10 דקות
+        setInterval(() => {
+            fetchTitles().then(updateTicker);
+        }, 10 * 60 * 1000);
+    </script>
+</body>
+</html>
