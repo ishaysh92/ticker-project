@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>טיקר חדשות now14</title>
+    <title>טיקר בדיקה פשוט</title>
     <style>
         body, html {
             margin: 0;
@@ -19,61 +19,38 @@
             position: absolute;
             bottom: 0;
             left: 0;
-            background-color: transparent;
-            overflow: hidden;
-        }
-        #ticker-content {
-            position: absolute;
-            white-space: nowrap;
-            animation: ticker 30s linear infinite;
-        }
-        #ticker-content:hover {
-            animation-play-state: paused;
-        }
-        .ticker-item {
-            display: inline-block;
-            padding: 0 20px;
+            background-color: rgba(0,0,0,0.5);
             color: white;
-            text-decoration: none;
-        }
-        @keyframes ticker {
-            0% { transform: translate3d(100%, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
         }
     </style>
 </head>
 <body>
     <div id="ticker">
-        <div id="ticker-content"></div>
+        אם אתה רואה את הטקסט הזה, הטיקר עובד באופן בסיסי.
     </div>
 
     <script>
-        function fetchTickerData(callback) {
-            const script = document.createElement('script');
-            script.src = 'https://www.now14.co.il/ticker-posts-tv.php?callback=handleTickerData';
-            document.body.appendChild(script);
-            window.handleTickerData = function(data) {
-                document.body.removeChild(script);
-                callback(data);
-            };
+        console.log("הקוד JavaScript נטען");
+        
+        function testFetch() {
+            fetch('https://www.now14.co.il/ticker-posts-tv.php')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("נתונים התקבלו בהצלחה:", data);
+                    document.getElementById('ticker').innerText = "נתונים התקבלו בהצלחה. בדוק את הקונסול.";
+                })
+                .catch(error => {
+                    console.error("שגיאה בטעינת הנתונים:", error);
+                    document.getElementById('ticker').innerText = "שגיאה בטעינת הנתונים. בדוק את הקונסול.";
+                });
         }
 
-        function updateTicker(items) {
-            const tickerContent = document.getElementById('ticker-content');
-            tickerContent.innerHTML = items.map(item => 
-                `<a href="${item.link}" class="ticker-item" target="_blank">${item.title}</a>`
-            ).join('');
-        }
-
-        function refreshTicker() {
-            fetchTickerData(updateTicker);
-        }
-
-        // טען ועדכן את הכותרות בעת טעינת הדף
-        refreshTicker();
-
-        // עדכן את הכותרות כל 5 דקות
-        setInterval(refreshTicker, 5 * 60 * 1000);
+        // נסה לטעון נתונים לאחר 2 שניות
+        setTimeout(testFetch, 2000);
     </script>
 </body>
 </html>
