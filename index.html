@@ -3,47 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>כותרות מתגלגלות - מיושר לימין</title>
+    <title>טיקר חדשות now14</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        body, html {
             margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
             background-color: transparent;
+            overflow: hidden;
         }
         #ticker {
-            width: 80%;
+            width: 100%;
             height: 60px;
-            overflow: hidden;
+            position: absolute;
+            bottom: 0;
+            left: 0;
             background-color: transparent;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            position: relative;
+            overflow: hidden;
         }
         #ticker-content {
             position: absolute;
-            width: 100%;
-            transition: transform 0.5s linear;
+            white-space: nowrap;
+            animation: ticker 30s linear infinite;
+        }
+        #ticker-content:hover {
+            animation-play-state: paused;
         }
         .ticker-item {
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start; /* שינוי ליישור לימין */
-            padding-right: 10px; /* מרווח מימין */
-        }
-        .ticker-item a {
+            display: inline-block;
+            padding: 0 20px;
             color: white;
             text-decoration: none;
-            text-align: right; /* יישור טקסט לימין */
-            width: 100%; /* מאפשר לטקסט להתפרס על פני כל הרוחב */
         }
-        .ticker-item a:hover {
-            text-decoration: underline;
+        @keyframes ticker {
+            0% { transform: translate3d(100%, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
         }
     </style>
 </head>
@@ -53,62 +48,34 @@
     </div>
 
     <script>
-        // נתונים מדומים לדוגמה
-        const mockData = [
-            { title: "כותרת ראשונה לדוגמה", link: "#" },
-            { title: "כותרת שנייה לדוגמה", link: "#" },
-            { title: "כותרת שלישית לדוגמה", link: "#" },
-            { title: "כותרת רביעית לדוגמה", link: "#" },
-            { title: "כותרת חמישית לדוגמה", link: "#" }
-        ];
+        const API_URL = 'https://www.now14.co.il/ticker-posts-tv.php';
+        const PROXY_URL = 'https://api.allorigins.win/get?url=';
 
-        function fetchTitles() {
-            return Promise.resolve(mockData);
+        async function fetchTickerData() {
+            try {
+                const response = await fetch(PROXY_URL + encodeURIComponent(API_URL));
+                const data = await response.json();
+                return JSON.parse(data.contents);
+            } catch (error) {
+                console.error('Error fetching ticker data:', error);
+                return [];
+            }
         }
 
         function updateTicker(items) {
             const tickerContent = document.getElementById('ticker-content');
-            const itemHeight = 60;
-            
-            // יצירת תוכן הטיקר עם כפילות
             tickerContent.innerHTML = items.map(item => 
-                `<div class="ticker-item"><a href="${item.link}" target="_blank">${item.title}</a></div>`
+                `<a href="${item.link}" class="ticker-item" target="_blank">${item.title}</a>`
             ).join('');
-
-            // שכפול התוכן פעם נוספת
-            tickerContent.innerHTML += tickerContent.innerHTML;
-
-            let currentIndex = 0;
-            const totalItems = items.length;
-
-            function moveNext() {
-                currentIndex++;
-                tickerContent.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
-                
-                if (currentIndex >= totalItems) {
-                    setTimeout(() => {
-                        tickerContent.style.transition = 'none';
-                        tickerContent.style.transform = 'translateY(0)';
-                        currentIndex = 0;
-                        setTimeout(() => {
-                            tickerContent.style.transition = 'transform 0.5s linear';
-                        }, 50);
-                    }, 500); // המתנה לסיום האנימציה
-                }
-
-                setTimeout(moveNext, 10000); // עיכוב של 10 שניות
-            }
-
-            setTimeout(moveNext, 10000); // התחל את התנועה לאחר 10 שניות
         }
 
         // טען ועדכן את הכותרות בעת טעינת הדף
-        fetchTitles().then(updateTicker);
+        fetchTickerData().then(updateTicker);
 
-        // עדכן את הכותרות כל 10 דקות
+        // עדכן את הכותרות כל 5 דקות
         setInterval(() => {
-            fetchTitles().then(updateTicker);
-        }, 10 * 60 * 1000);
+            fetchTickerData().then(updateTicker);
+        }, 5 * 60 * 1000);
     </script>
 </body>
 </html>
