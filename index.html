@@ -53,20 +53,17 @@
     </div>
 
     <script>
+        // נתונים מדומים לדוגמה
+        const mockData = [
+            { title: "כותרת ראשונה לדוגמה", link: "#" },
+            { title: "כותרת שנייה לדוגמה", link: "#" },
+            { title: "כותרת שלישית לדוגמה", link: "#" },
+            { title: "כותרת רביעית לדוגמה", link: "#" },
+            { title: "כותרת חמישית לדוגמה", link: "#" }
+        ];
+
         function fetchTitles() {
-            return fetch('https://www.now14.co.il/ticker-posts-tv.php')
-                .then(response => response.json())
-                .then(data => {
-                    // שינוי בהתאם למבנה הנתונים שמתקבלים מה-URL
-                    return data.map(item => ({
-                        title: item.title, 
-                        link: item.link 
-                    }));
-                })
-                .catch(error => {
-                    console.error('Error fetching titles:', error);
-                    return [];
-                });
+            return Promise.resolve(mockData);
         }
 
         function updateTicker(items) {
